@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+		<style>	
+			body {
+				font-family: Arial, sans-serif;
+				margin: 20px;
+				background-color: #f4f4f4;
+			}
+			#connectionIndicator {
+				display: inline-block;
+				width: 15px;
+				height: 15px;
+				border-radius: 50%;
+				margin-left: 10px;
+				vertical-align: middle;
+			}
+			#connectionIndicator[data-status="connected"] {
+				background-color: green;
+			}
+			#connectionIndicator[data-status="disconnected"] {
+				background-color: red;
+			}
+			form > div {
+				padding: 10px;
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				width: 200px;
+			}
+			#messages {
+				list-style-type: none;
+				padding: 0;
+			}
+			#messages li {
+				background: #fff;
+				margin-bottom: 10px;
+				padding: 10px;
+				border-radius: 5px;
+				box-shadow: 0 0 5px rgba(0,0,0,0.1);
+				max-width: 200px;
+				word-wrap: break-word;
+			}
+		</style>
+    </head>
+    <body>
+        <form action="" onsubmit="sendMessage(event)">
+			<div>
+				<div>
+					<span>Connection indicator:</span>
+					<div id="connectionIndicator" data-status="disconnected"></div>
+				</div>
+				<select id="commandSelect">
+					<option value="broadcast">Broadcast</option>
+					<option value="message">Private Message</option>
+				</select>
+				<input type="text" id="messageText" autocomplete="off" placeholder="Your message"/>
+				<button>Send</button>
+			</div>
+        </form>
+        <ul id='messages'>
+        </ul>
+        <script>
+            var ws = new WebSocket("ws://localhost:8000/ws");
+
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+
+				var contentDiv = document.createElement('div')
+
+				var command = event.data.split(":")[0]
+				var commandSpan = document.createElement('span')
+				commandSpan.style.fontWeight = 'bold'
+				commandSpan.textContent = `[${command}] `
+				contentDiv.appendChild(commandSpan)
+
+				var contentSpan = document.createElement('span')
+				contentSpan.textContent = event.data.substring(command.length + 1)
+				contentDiv.appendChild(contentSpan)
+
+				message.appendChild(contentDiv)
+                messages.appendChild(message)
+            };
+
+			ws.onopen = function(event) {
+				var indicator = document.getElementById("connectionIndicator")
+				indicator.setAttribute("data-status", "connected")
+			}
+
+			ws.onclose = function(event) {
+				var indicator = document.getElementById("connectionIndicator")
+				indicator.setAttribute("data-status", "disconnected")
+			}
+
+            function sendMessage(event) {
+                event.preventDefault()
+                var input = document.getElementById("messageText")
+				var commandSelect = document.getElementById("commandSelect")
+				ws.send(`${commandSelect.value}:${input.value}`)
+                input.value = ''
+            }
+        </script>
+    </body>
+</html>
+

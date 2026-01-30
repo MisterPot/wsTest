@@ -31,8 +31,8 @@
 ## Additional Information
 ### Graceful Shutdown
 - The server is configured to handle graceful shutdowns.
-When you stop the server using `Ctrl + C`, it will try to close unclosed websocket connections. However, there are a debug delays, which you can configure in the `local.env` file.
-`FORCE_SHUTDOWN_TIMEOUT` controls how long the server will wait before forcing a shutdown.
-`REPORT_PROGRESS_INTERVAL` controls how often the server reports progress during shutdown.
-`DEBUG_CLEANUP_DELAY` delays a cleanup in seconds.
+When you stop the server using `Ctrl + C`, it will try to close unclosed websocket connections. However, there are a debug delays, which you can configure in the `local.env` file.  
+`FORCE_SHUTDOWN_TIMEOUT` controls how long the server will wait before forcing a shutdown.  
+`REPORT_PROGRESS_INTERVAL` controls how often the server reports progress during shutdown.  
+`DEBUG_CLEANUP_DELAY` delays a cleanup in seconds.  
 
